@@ -1,8 +1,8 @@
 import java.util.Scanner;
 
 public class LibrarySystem {
-    private Library library;
-    private Scanner scanner;
+    private final Library library;
+    private final Scanner scanner;
 
     public LibrarySystem() {
         library = new Library();
@@ -16,29 +16,17 @@ public class LibrarySystem {
             scanner.nextLine();
 
             switch (choice) {
-                case 1:
-                    addBook();
-                    break;
-                case 2:
-                    removeBook();
-                    break;
-                case 3:
-                    searchBook();
-                    break;
-                case 4:
-                    borrowBook();
-                    break;
-                case 5:
-                    returnBook();
-                    break;
-                case 6:
-                    library.showAllBooks();
-                    break;
-                case 0:
+                case 1 -> addBook();
+                case 2 -> removeBook();
+                case 3 -> searchBook();
+                case 4 -> borrowBook();
+                case 5 -> returnBook();
+                case 6 -> library.showAllBooks();
+                case 0 -> {
                     System.out.println("退出系统");
                     return;
-                default:
-                    System.out.println("无效选择，请重新输入");
+                }
+                default -> System.out.println("无效选择，请重新输入");
             }
         }
     }
