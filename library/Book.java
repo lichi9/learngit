@@ -11,6 +11,13 @@ public class Book {
         this.isAvailable = true;
     }
 
+    public Book(int id, String title, String author, boolean isAvailable) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.isAvailable = isAvailable;
+    }
+
     public int getId() {
         return id;
     }

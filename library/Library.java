@@ -1,14 +1,19 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Library {
     private final List<Book> books;
     private int nextId;
+    private static final String DATA_FILE = "library_data.txt";
 
     public Library() {
         books = new ArrayList<>();
         nextId = 1;
-        initSampleBooks();
+        loadBooks();
+        if (books.isEmpty()) {
+            initSampleBooks();
+        }
     }
 
     private void initSampleBooks() {
@@ -16,10 +21,47 @@ public class Library {
         addBook("西游记", "吴承恩");
         addBook("三国演义", "罗贯中");
         addBook("水浒传", "施耐庵");
+        saveBooks();
+    }
+
+    private void loadBooks() {
+        File file = new File(DATA_FILE);
+        if (!file.exists()) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(DATA_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    int id = Integer.parseInt(parts[0]);
+                    String title = parts[1];
+                    String author = parts[2];
+                    boolean isAvailable = Boolean.parseBoolean(parts[3]);
+                    books.add(new Book(id, title, author, isAvailable));
+                    nextId = Math.max(nextId, id + 1);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("读取数据失败");
+        }
+    }
+
+    public void saveBooks() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(DATA_FILE))) {
+            for (Book book : books) {
+                writer.println(book.getId() + "," + book.getTitle() + "," +
+                             book.getAuthor() + "," + book.isAvailable());
+            }
+        } catch (IOException e) {
+            System.out.println("保存数据失败");
+        }
     }
 
     public void addBook(String title, String author) {
         books.add(new Book(nextId++, title, author));
+        saveBooks();
     }
 
     public boolean removeBook(int id) {
@@ -40,6 +82,7 @@ public class Library {
         }
 
         books.remove(bookToRemove);
+        saveBooks();
         return true;
     }
 
@@ -61,6 +104,7 @@ public class Library {
             if (book.getId() == id) {
                 if (book.isAvailable()) {
                     book.borrow();
+                    saveBooks();
                     return true;
                 }
                 return false;
@@ -74,6 +118,7 @@ public class Library {
             if (book.getId() == id) {
                 if (!book.isAvailable()) {
                     book.returnBook();
+                    saveBooks();
                     return true;
                 }
                 return false;
